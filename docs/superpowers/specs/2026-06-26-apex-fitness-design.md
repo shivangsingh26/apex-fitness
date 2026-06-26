@@ -67,6 +67,7 @@ Each module is isolated, has a clear interface, and is testable on its own.
 7. **Dashboard** — numeric readout: % to goal, days left, on-track/behind, streaks.
 8. **AI coach** — recommendations + motivation phrased in numbers; delivered via push.
 9. **Health sync** — read steps from Apple HealthKit, feed into TDEE.
+10. **Habits** — water intake, sleep hours/quality, supplement/creatine adherence; streaks feed the coach.
 
 ---
 
@@ -98,6 +99,14 @@ food_logs(id, user_id, date, meal, food_id, qty, kcal, protein_g, carb_g, fat_g,
           fiber_g, scan_method, photo_path)
 
 daily_steps(id, user_id, date, steps, source)   -- from HealthKit
+
+water_logs(id, user_id, date, ml)                -- hydration
+
+sleep_logs(id, user_id, date, hours, quality)    -- quality 1-5
+
+supplements(id, user_id, name, default_dose, unit, schedule)   -- e.g. creatine 5 g daily
+
+supplement_logs(id, user_id, supplement_id, date, dose, taken_at)  -- adherence
 ```
 
 ---
@@ -136,6 +145,7 @@ Each phase = its own spec + implementation plan + build. This document is the ma
 - **Phase 5 — Goal + progress engine:** TDEE math, weigh-ins, measurements, progress photos,
   HealthKit steps, dashboard with numeric progress.
 - **Phase 6 — AI coach + notifications:** recommendations, motivation, Expo push.
+- **Phase 7 — Habits:** water, sleep, supplement/creatine logging + streaks (tables exist from Phase 1).
 
 ---
 
