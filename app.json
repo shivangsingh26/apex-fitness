@@ -7,7 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -25,7 +24,6 @@
     },
     "plugins": [
       "expo-router",
-      "expo-status-bar",
       ["expo-camera", { "cameraPermission": "Apex uses the camera to scan food barcodes." }]
     ]
   }
