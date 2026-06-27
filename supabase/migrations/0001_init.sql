@@ -219,3 +219,18 @@ create policy "exercises delete own" on public.exercises
 -- foods: shared reference DB readable by all; inserts allowed for authenticated
 create policy "foods read" on public.foods for select using (true);
 create policy "foods insert" on public.foods for insert to authenticated with check (true);
+
+-- ============================================================================
+-- Auto-create a profile row when an auth user is created
+-- ============================================================================
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.users (id, email) values (new.id, new.email)
+  on conflict (id) do nothing;
+  return new;
+end $$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
