@@ -145,3 +145,77 @@ create table public.supplement_logs (
   dose numeric,
   taken_at timestamptz not null default now()
 );
+
+-- ============================================================================
+-- Row-Level Security
+-- ============================================================================
+
+-- PostgREST connects as the `authenticated` (or `anon`) role; without table
+-- grants those roles see nothing. Grant table privileges, then let RLS
+-- policies filter rows down to the owner.
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select on public.exercises, public.foods to anon;
+
+-- Enable RLS on every user-owned table
+alter table public.users enable row level security;
+alter table public.goals enable row level security;
+alter table public.body_logs enable row level security;
+alter table public.progress_photos enable row level security;
+alter table public.workouts enable row level security;
+alter table public.workout_sets enable row level security;
+alter table public.food_logs enable row level security;
+alter table public.daily_steps enable row level security;
+alter table public.water_logs enable row level security;
+alter table public.sleep_logs enable row level security;
+alter table public.supplements enable row level security;
+alter table public.supplement_logs enable row level security;
+alter table public.exercises enable row level security;
+alter table public.foods enable row level security;
+
+-- users: a row is its own owner (id == auth.uid())
+create policy "users self" on public.users
+  for all using (id = auth.uid()) with check (id = auth.uid());
+
+-- owner via user_id
+create policy "goals owner" on public.goals
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "body_logs owner" on public.body_logs
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "progress_photos owner" on public.progress_photos
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "workouts owner" on public.workouts
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "food_logs owner" on public.food_logs
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "daily_steps owner" on public.daily_steps
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "water_logs owner" on public.water_logs
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "sleep_logs owner" on public.sleep_logs
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "supplements owner" on public.supplements
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "supplement_logs owner" on public.supplement_logs
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- workout_sets: ownership via parent workout
+create policy "workout_sets owner" on public.workout_sets
+  for all using (
+    exists (select 1 from public.workouts w where w.id = workout_id and w.user_id = auth.uid())
+  ) with check (
+    exists (select 1 from public.workouts w where w.id = workout_id and w.user_id = auth.uid())
+  );
+
+-- exercises: shared library readable by all; custom rows owned by creator
+create policy "exercises read" on public.exercises for select using (true);
+create policy "exercises write own" on public.exercises
+  for insert with check (owner_id = auth.uid());
+create policy "exercises update own" on public.exercises
+  for update using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+create policy "exercises delete own" on public.exercises
+  for delete using (owner_id = auth.uid());
+
+-- foods: shared reference DB readable by all; inserts allowed for authenticated
+create policy "foods read" on public.foods for select using (true);
+create policy "foods insert" on public.foods for insert to authenticated with check (true);
