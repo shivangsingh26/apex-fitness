@@ -58,6 +58,7 @@ export default function Food() {
       <View style={{ flexDirection: "row", gap: 8 }}>
         <Button title="Add food" onPress={() => router.push({ pathname: "/food/add", params: { date } })} />
         <Button title="Scan" onPress={() => router.push({ pathname: "/food/scan", params: { date } })} />
+        <Button title="Photo" onPress={() => router.push({ pathname: "/food/photo", params: { date } })} />
       </View>
 
       <ScrollView>
