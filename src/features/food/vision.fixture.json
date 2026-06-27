@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "name": "Grilled chicken breast", "grams": 150, "kcal": 248, "protein": 46.5, "carb": 0, "fat": 5.4, "fiber": 0, "confidence": 0.8 },
+    { "name": "White rice", "grams": 200, "kcal": 260, "protein": 5.4, "carb": 56, "fat": 0.6, "fiber": 0.8, "confidence": 0.6 }
+  ]
+}
