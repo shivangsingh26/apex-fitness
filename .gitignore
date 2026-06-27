@@ -34,3 +34,4 @@ supabase/.temp/
 web-build/
 yarn-debug.*
 yarn-error.*
+supabase/functions/.env
